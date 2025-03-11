@@ -1,10 +1,7 @@
-import { Scene, GameObjects } from 'phaser';
+import { Scene } from 'phaser';
+import { GameState } from '../models/GameState';
 
 export class MainMenu extends Scene {
-	background: GameObjects.Image;
-	logo: GameObjects.Image;
-	title: GameObjects.Text;
-
 	constructor() {
 		super('MainMenu');
 	}
@@ -15,19 +12,65 @@ export class MainMenu extends Scene {
 			y: this.scale.height / 2
 		};
 
-		this.background = this.add.image(center.x, center.y, 'background');
-		this.logo = this.add.image(center.x, 128, 'logo');
+		this.add.image(center.x, center.y, 'background');
+		this.add.image(center.x, 128, 'logo');
 
-		this.title = this.add.text(center.x, 256, 'Main Menu', {
-			fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+		this.add.text(center.x, 280, 'Main Menu', {
+			fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
 			stroke: '#000000', strokeThickness: 8,
 			align: 'center'
 		}).setOrigin(0.5);
 
-		this.input.once('pointerdown', () => {
+		const pvpText = this.add.text(center.x, 400, 'Player vs Player', {
+			fontFamily: 'Arial Black', fontSize: 42, color: '#ffffff',
+			stroke: '#000000', strokeThickness: 8,
+			align: 'center'
+		}).setOrigin(0.5).setInteractive();
 
-			this.scene.start('Game');
+		pvpText.on('pointerdown', () => this.scene.start('GameSetup', { state: new GameState() }));
+		pvpText.on('pointerover', () => {
+			this.input.manager.canvas.style.cursor = 'pointer';
+			this.tweens.add({
+				targets: pvpText,
+				scale: 1.1,
+				duration: 100,
+				ease: 'Power2'
+			});
+		});
+		pvpText.on('pointerout', () => {
+			this.input.manager.canvas.style.cursor = 'default';
+			this.tweens.add({
+				targets: pvpText,
+				scale: 1,
+				duration: 100,
+				ease: 'Power2'
+			});
+		});
 
+		const pvcText = this.add.text(center.x, 480, 'Player vs Computer', {
+			fontFamily: 'Arial Black', fontSize: 42, color: '#ffffff',
+			stroke: '#000000', strokeThickness: 8,
+			align: 'center'
+		}).setOrigin(0.5).setInteractive();
+
+		pvcText.on('pointerdown', () => this.scene.start('GameSetup', { state: new GameState(false) }));
+		pvcText.on('pointerover', () => {
+			this.input.manager.canvas.style.cursor = 'pointer';
+			this.tweens.add({
+				targets: pvcText,
+				scale: 1.1,
+				duration: 100,
+				ease: 'Power2'
+			});
+		});
+		pvcText.on('pointerout', () => {
+			this.input.manager.canvas.style.cursor = 'default';
+			this.tweens.add({
+				targets: pvcText,
+				scale: 1,
+				duration: 100,
+				ease: 'Power2'
+			});
 		});
 	}
 }
