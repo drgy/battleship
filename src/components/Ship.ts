@@ -28,10 +28,11 @@ export class Ship extends Phaser.GameObjects.Container {
 		this._shipLength = length;
 		this._unitSize = unitSize;
 		this._sprite = scene.add.sprite(0, 0, `ship${length}`);
-		this.setRotation(Math.PI / 2);
 		this._sprite.setScale((unitSize * length) / this._sprite.height);
 		this._sprite.setOrigin(1, 1);
-		this.setSize(this._sprite.displayWidth, this._sprite.displayHeight);
+		this._sprite.x = (this._sprite.width - this._unitSize) / 2;
+		this.setSize(this._unitSize, this._unitSize * this._shipLength);
+		this.isVertical = false;
 
 		if (draggable) {
 			this.setInteractive(new Phaser.Geom.Rectangle(-this.width / 2, -this.height / 2, this.width, this.height), Phaser.Geom.Rectangle.Contains);
