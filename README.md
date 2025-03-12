@@ -2,14 +2,6 @@
 
 This is a classic Battleship game implemented using the Phaser framework. The game allows up to two players to take turns guessing the locations of each other's ships on a grid. The goal is to sink all of the opponent's ships before they sink yours.
 
-### Versions
-
-This template has been updated for:
-
-- [Phaser 3.88.2](https://github.com/phaserjs/phaser)
-- [Vite 5.3.1](https://github.com/vitejs/vite)
-- [TypeScript 5.4.5](https://github.com/microsoft/TypeScript)
-
 ## Requirements
 
 [Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
