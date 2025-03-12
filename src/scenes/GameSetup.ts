@@ -34,6 +34,9 @@ export class GameSetup extends Scene {
 		this.add.existing(this.grid);
 		this.grid.addDropzones();
 
+		const menuButton = new IconButton(this, 'back', () => this.scene.start('MainMenu'));
+		menuButton.setPosition(10, 10);
+
 		this.ships = this.state.shipFactory(this, this.grid.cellSize);
 		this.shipSelection = new ShipSelection(this, this.ships, this.grid);
 

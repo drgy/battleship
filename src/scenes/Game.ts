@@ -4,6 +4,7 @@ import { CellState, GridCell } from '../components/GridCell';
 import { Grid } from '../components/Grid';
 import { ShipOverview } from '../components/ShipOverview';
 import { Player } from '../models/Player';
+import { IconButton } from '../components/IconButton';
 
 export class Game extends Scene {
 	protected state: GameState;
@@ -208,6 +209,9 @@ export class Game extends Scene {
 			y: this.scale.height / 2
 		};
 		this.add.image(center.x, center.y, 'background');
+
+		const menuButton = new IconButton(this, 'back', () => this.scene.start('MainMenu'));
+		menuButton.setPosition(10, 10);
 
 		this.grid = new Grid(this, this.state.gridSize, Math.min((this.scale.width / 2) - 100, this.scale.height - 100), CellState.UNKNOWN, this.attack);
 		this.grid.setPosition(this.scale.width / 4, this.scale.height / 2);
