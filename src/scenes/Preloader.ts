@@ -26,7 +26,7 @@ export class Preloader extends Scene  {
 	preload() {
 		this.load.setPath(import.meta.env.BASE_URL);
 
-		['logo', 'ship1', 'ship2', 'ship3', 'ship4', 'rotate'].forEach(pngAsset => this.load.image(pngAsset, `${pngAsset}.png`));
+		['logo', 'ship1', 'ship2', 'ship3', 'ship4', 'rotate', 'play', 'random' ].forEach(pngAsset => this.load.image(pngAsset, `${pngAsset}.png`));
 	}
 
 	create() {

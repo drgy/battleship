@@ -10,18 +10,49 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 	protected _itemsPerColumn: number;
 	protected _lastShip: Ship | null = null;
 
+	public get allShipsPlaced(): boolean {
+		return this._ships.every(ship => ship.coords.row >= 0);
+	}
+
 	public get lastShip(): Ship | null {
 		return this._lastShip;
 	}
 
+	public randomPlacement() {
+		this._grid.setCellsState(CellState.WATER);
+
+		for (const ship of this._ships) {
+			while (true) {
+				const cell = this._grid.getRandomCell();
+
+				if (cell) {
+					ship.isVertical = Phaser.Math.Between(0, 1) === 1;
+
+					if (this._grid.placeAttempt(ship, cell)) {
+						this._grid.place(ship, cell);
+						ship.coords = cell.coords;
+						ship.absolutePosition = this._grid.getAbsolutePosition(cell);
+						break;
+					}
+
+					this._grid.clearHelpers();
+				}
+			}
+	}
+	}
+
 	public resetShip(ship: Ship) {
 		const index = this._ships.indexOf(ship);
+		ship.coords = { row: -1, column: -1 };
 		ship.setPosition(Math.floor(index / this._itemsPerColumn) * this._offset.x, (index % this._itemsPerColumn) * this._offset.y);
 	}
 
-	protected resetSelection() {
+	public resetSelection() {
 		this._lastShip = null;
-		this._ships.forEach(ship => this.resetShip(ship));
+		this._ships.forEach(ship => {
+			ship.isVertical = false;
+			this.resetShip(ship);
+	});
 	}
 
 	constructor(scene: Phaser.Scene, ships: Ship[], grid: Grid) {
@@ -64,16 +95,11 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 			currentTarget = target.data.list.cell;
 
 			this._grid.clearHelpers();
-			this._grid.placeAttempt(ship, currentTarget!);
 
-			const targetGlobalX = currentTarget!.parentContainer.x + target.x - target.displayWidth / 2;
-			const targetGlobalY = currentTarget!.parentContainer.y + target.y - target.displayHeight / 2;
-
-			const shipLocalX = targetGlobalX - ship.parentContainer.x;
-			const shipLocalY = targetGlobalY - ship.parentContainer.y;
-
-			ship.x = shipLocalX;
-			ship.y = shipLocalY + (target.displayHeight * (ship.isVertical ? 0 : 1));
+			if (currentTarget) {
+				this._grid.placeAttempt(ship, currentTarget!);
+				ship.absolutePosition = this._grid.getAbsolutePosition(currentTarget);
+			}
 		});
 
 		scene.input.on('dragleave', (pointer: any, ship: any, target: any) => {

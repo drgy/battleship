@@ -1,3 +1,5 @@
+import { Scene } from "phaser";
+import { Ship } from "../components/Ship";
 import { Player, PlayerType } from "./Player";
 
 export class GameState {
@@ -13,8 +15,21 @@ export class GameState {
 		return this.players[1];
 	}
 
+	public shipFactory(scene: Scene, unitSize: number, draggable = true): Ship[] {
+		const ships: Ship[] = [];
+		
+		this.ships.forEach((count, length) => {
+			for (let i = 0; i < count; i++) {
+				const ship = new Ship(scene, length, unitSize, draggable);
+				ships.push(ship);
+			}
+		});
+
+		return ships;
+	}
+
 	constructor(pvp = true) {
-		this.players.push(new Player());
-		this.players.push(new Player(pvp ? PlayerType.HUMAN : PlayerType.COMPUTER));
+		this.players.push(new Player('Player 1'));
+		this.players.push(new Player(pvp ? 'Player 2' : 'Computer', pvp ? PlayerType.HUMAN : PlayerType.COMPUTER));
 	}
 }

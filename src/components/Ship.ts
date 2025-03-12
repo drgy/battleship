@@ -10,7 +10,7 @@ export class Ship extends Phaser.GameObjects.Container {
 		this._isVertical = isVertical;
 		this.setRotation(this._isVertical ? Math.PI : Math.PI / 2);
 
-		if (this.coords.row > 0) {
+		if (this.coords.row >= 0) {
 			this.y += this._unitSize * (this._isVertical ? -1 : 1);
 		}
 	}
@@ -21,6 +21,10 @@ export class Ship extends Phaser.GameObjects.Container {
 
 	public get shipLength(): number {
 		return this._shipLength;
+	}
+
+	public set absolutePosition(position: { x: number, y: number }) {
+		this.setPosition(position.x - this.parentContainer.x, position.y - this.parentContainer.y + (this._unitSize * (this._isVertical ? 0 : 1)));
 	}
 
 	constructor(scene: Phaser.Scene, length: number, unitSize: number, draggable = true) {

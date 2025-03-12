@@ -1,32 +1,28 @@
 import { Scene } from 'phaser';
+import { GameState } from '../models/GameState';
 
 export class GameOver extends Scene {
-	camera: Phaser.Cameras.Scene2D.Camera;
-	background: Phaser.GameObjects.Image;
-	gameover_text: Phaser.GameObjects.Text;
+	protected state: GameState;
 
 	constructor() {
 		super('GameOver');
 	}
 
+	init(data: { state: GameState }) {
+		this.state = data.state;
+	}
+
 	create() {
-		this.camera = this.cameras.main;
-		this.camera.setBackgroundColor(0xff0000);
+		const center = {
+			x: this.scale.width / 2,
+			y: this.scale.height / 2
+		};
+		this.add.image(center.x, center.y, 'background');
 
-		this.background = this.add.image(512, 384, 'background');
-		this.background.setAlpha(0.5);
-
-		this.gameover_text = this.add.text(512, 384, 'Game Over', {
-			fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
+		this.add.text(center.x, center.y, `${this.state.player1.ships.length ? this.state.player2.name : this.state.player1.name} won`, {
+			fontFamily: 'Arial Black', fontSize: 42, color: '#ffffff',
 			stroke: '#000000', strokeThickness: 8,
 			align: 'center'
-		});
-		this.gameover_text.setOrigin(0.5);
-
-		this.input.once('pointerdown', () => {
-
-			this.scene.start('MainMenu');
-
-		});
+		}).setOrigin(0.5, 0.5);
 	}
 }

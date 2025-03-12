@@ -1,5 +1,5 @@
 export enum CellState {
-	UNKNOWN, WATER, SHIP, READY, BLOCKED
+	UNKNOWN, WATER, SHIP_VERTICAL, SHIP_HORIZONTAL, READY, BLOCKED, HIT
 }
 
 const COLORS = new Map<CellState, number>([
@@ -7,7 +7,9 @@ const COLORS = new Map<CellState, number>([
 	[CellState.READY, 0x12aa12],
 	[CellState.BLOCKED, 0xaa1212],
 	[CellState.WATER, 0x1212aa],
-	[CellState.SHIP, 0x1212aa]
+	[CellState.SHIP_VERTICAL, 0x1212aa],
+	[CellState.SHIP_HORIZONTAL, 0x1212aa],
+	[CellState.HIT, 0xaa1212],
 ]);
 const BORDER_THICKNESS = 2;
 
@@ -37,7 +39,10 @@ export class GridCell extends Phaser.GameObjects.Graphics {
 		this.setPosition(x, y);
 		this.draw();
 		scene.add.existing(this);
-		this.setInteractive();
+		this.setInteractive(new Phaser.Geom.Rectangle(0, 0, size, size), Phaser.Geom.Rectangle.Contains);
+		this.on('pointerover', () => scene.input.manager.canvas.style.cursor = 'pointer');
+		this.on('pointerout', () => scene.input.manager.canvas.style.cursor = 'default');
+		this.on('pointerup', () => this.emit('click'));
 	}
 
 	public draw(): void {

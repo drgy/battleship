@@ -8,6 +8,10 @@ export class Grid extends Phaser.GameObjects.Container {
 	private _originX: number = 0;
 	private _originY: number = 0;
 
+	public get serialized(): CellState[][] {
+		return this._cells.map(row => row.map(cell => cell.cellState));
+	}
+
 	public get cellSize(): number {
 		return this._cellSize;
 	}
@@ -26,22 +30,26 @@ export class Grid extends Phaser.GameObjects.Container {
 				const cell = new GridCell(scene, x, y, this._cellSize, initState, { row, column });
 				this._cells[row].push(cell);
 				this.add(cell);
+				cell.on('click', () => this.emit('cellClick', cell));
 			}
 		}
 
 		this.setSize(size, size);
-		this.setInteractive(new Phaser.Geom.Rectangle(0, 0, size, size), Phaser.Geom.Rectangle.Contains);
-
-		this.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-			const col = Math.floor(pointer.x / this._cellSize);
-			const row = Math.floor(pointer.y / this._cellSize);
-
-			if (row >= 0 && row < this._cells.length && col >= 0 && col < this._cells[row].length) {
-				this.emit('cellclick', row, col, this._cells[row][col]);
-			}
-		});
 
 		scene.add.existing(this);
+	}
+
+	public getRandomCell(): GridCell {
+		const row = Phaser.Math.Between(0, this._cells.length - 1);
+		const column = Phaser.Math.Between(0, this._cells[row].length - 1);
+		return this._cells[row][column];
+	}
+
+	public getAbsolutePosition(cell: GridCell): { x: number; y: number } {
+		return {
+			x: this.x + cell.x,
+			y: this.y + cell.y
+		};
 	}
 
 	public getCell(row: number, col: number): GridCell | null {
@@ -130,7 +138,7 @@ export class Grid extends Phaser.GameObjects.Container {
 	// Will place the ship onto the grid cell, first it should be checked if the ship can be placed
 	public place(ship: Ship, cell: GridCell) {
 		for (let i = 0; i < ship.shipLength; i++) {
-			this._cells[cell.coords.row + (ship.isVertical ? i : 0)][cell.coords.column + (ship.isVertical ? 0 : i)].cellState = CellState.SHIP;
+			this._cells[cell.coords.row + (ship.isVertical ? i : 0)][cell.coords.column + (ship.isVertical ? 0 : i)].cellState = ship.isVertical ? CellState.SHIP_VERTICAL : CellState.SHIP_HORIZONTAL;
 		}
 	}
 
@@ -156,10 +164,17 @@ export class Grid extends Phaser.GameObjects.Container {
 		this.setPosition(this.x - offsetX, this.y - offsetY);
 	}
 
+	public setCellsState(state: CellState): void {
+		for (let row = 0; row < this._cells.length; row++) {
+			for (let col = 0; col < this._cells[row].length; col++) {
+				this._cells[row][col].cellState = state;
+			}
+		}
+	}
+
 	public setCellState(row: number, col: number, state: CellState): void {
 		if (row >= 0 && row < this._cells.length && col >= 0 && col < this._cells[row].length) {
 			this._cells[row][col].cellState = state;
-			this._cells[row][col].draw();
 		}
 	}
 
@@ -167,7 +182,6 @@ export class Grid extends Phaser.GameObjects.Container {
 		for (let row = 0; row < this._cells.length; row++) {
 			for (let col = 0; col < this._cells[row].length; col++) {
 				this._cells[row][col].cellState = state[row][col];
-				this._cells[row][col].draw();
 			}
 		}
 	}
