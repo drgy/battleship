@@ -4,6 +4,7 @@ import { Ship } from "./Ship";
 
 type DragTarget = { target: { data: { list: { cell: GridCell } } } };
 
+// Displays ships and handles their placement onto the grid
 export class ShipSelection extends Phaser.GameObjects.Container {
 	protected _ships: Ship[];
 	protected _grid: Grid;
@@ -20,6 +21,7 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 		return this._lastShip;
 	}
 
+	// Randomizes placement of all ships
 	public randomPlacement() {
 		this._grid.setCellsState(CellState.WATER);
 
@@ -44,12 +46,14 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 		}
 	}
 
+	// Puts a single ship into the selection
 	public resetShip(ship: Ship) {
 		const index = this._ships.indexOf(ship);
 		ship.coords = { row: -1, column: -1 };
 		ship.setPosition(Math.floor(index / this._itemsPerColumn) * this._offset.x, (index % this._itemsPerColumn) * this._offset.y);
 	}
 
+	// Puts all ships into the selection
 	public resetSelection() {
 		this._lastShip = null;
 		this._ships.forEach(ship => {
@@ -78,6 +82,7 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 		this.setSize(this._columns * this._offset.x, this._itemsPerColumn * this._offset.y);
 		this.resetSelection();
 
+		// Drag & drop ships onto the grid
 		let currentTarget: GridCell | null = null;
 
 		scene.input.on('dragstart', (_p, ship: Ship) => {

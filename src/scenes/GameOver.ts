@@ -3,14 +3,14 @@ import { GameState } from '../models/GameState';
 import { IconButton } from '../components/IconButton';
 
 export class GameOver extends Scene {
-	protected state: GameState;
+	protected _state: GameState;
 
 	constructor() {
 		super('GameOver');
 	}
 
 	init(data: { state: GameState }) {
-		this.state = data.state;
+		this._state = data.state;
 	}
 
 	create() {
@@ -23,7 +23,7 @@ export class GameOver extends Scene {
 		const menuButton = new IconButton(this, 'back', () => this.scene.start('MainMenu'));
 		menuButton.setPosition(10, 10);
 
-		this.add.text(center.x, center.y, `${this.state.player1.ships.length ? this.state.player2.name : this.state.player1.name} won`, {
+		this.add.text(center.x, center.y, `${this._state.player1.ships.length ? this._state.player2.name : this._state.player1.name} won`, {
 			fontFamily: 'Arial Black', fontSize: 42, color: '#ffffff',
 			stroke: '#000000', strokeThickness: 8,
 			align: 'center'

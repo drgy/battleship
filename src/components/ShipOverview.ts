@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import { Ship } from "./Ship";
 
+// Only displays ships
 export class ShipOverview extends Phaser.GameObjects.Container {
 	constructor(scene: Scene, ships: Ship[], unitSize: number) {
 		super(scene);

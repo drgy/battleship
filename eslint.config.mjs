@@ -11,7 +11,7 @@ export default [
 	{files: ["**/*.{js,mjs,cjs,ts}"]},
 	{languageOptions: { globals: globals.browser, parser: parserTs }},
 	pluginJs.configs.recommended,
-	globalIgnores(['log.js', 'vite/*']),
+	globalIgnores(['vite/*', 'dist/*']),
 	...tseslint.configs.recommended,
 	{
 		plugins: {'@stylistic': stylistic},
