@@ -9,7 +9,7 @@ const COLORS = new Map<CellState, number>([
 	[CellState.WATER, 0x1212aa],
 	[CellState.SHIP_VERTICAL, 0x1212aa],
 	[CellState.SHIP_HORIZONTAL, 0x1212aa],
-	[CellState.HIT, 0xaa1212],
+	[CellState.HIT, 0xaa1212]
 ]);
 const BORDER_THICKNESS = 2;
 

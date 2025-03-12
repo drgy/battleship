@@ -3,7 +3,7 @@ import { GameState } from '../models/GameState';
 import { CellState, GridCell } from '../components/GridCell';
 import { Grid } from '../components/Grid';
 import { ShipOverview } from '../components/ShipOverview';
-import { Player } from '../models/Player';
+import { Player, PlayerType } from '../models/Player';
 import { IconButton } from '../components/IconButton';
 
 export class Game extends Scene {
@@ -22,23 +22,64 @@ export class Game extends Scene {
 		this.state = data.state;
 	}
 
+	// Simple AI picking random cells
+	protected aiTurn() {
+		setTimeout(() => {
+			let target;
+
+			// try to get random cell
+			for (let i = 0; i < 50; i++) {
+				target = this.grid.getRandomCell();
+
+				if (target.cellState === CellState.UNKNOWN) {
+					break;
+				}
+			}
+
+
+			// In case there are too few cells, the probability of finding one by random is low
+			if (target!.cellState !== CellState.UNKNOWN) {
+				for (let row = 0; row < this.currentPlayer.enemyGrid.length; row++) {
+					for (let col = 0; col < this.currentPlayer.enemyGrid[row].length; col++) {
+						target = this.grid.getCell(row, col);
+
+						if (target!.cellState === CellState.UNKNOWN) {
+							break;
+						}
+					}
+				}
+			}
+
+			this.attack(target!, true);
+
+			if (target!.cellState === CellState.HIT) {
+				this.aiTurn();
+			}
+		}, this.timeDelay);
+	}
+
 	protected startTurn(player: Player) {
 		this.gameStateText.setText(`${player.name} plays`);
 		player.shipOverview.setVisible(true);
 		this.grid.cellsState = player.enemyGrid;
 		this.currentPlayer = player;
-		this.ready = true;
+
+		if (this.currentPlayer.type === PlayerType.HUMAN) {
+			this.ready = true;
+		} else {
+			this.aiTurn();
+		}
 	}
 
-	protected attack(cell: GridCell) {
-		if (cell.cellState === CellState.UNKNOWN && this.ready) {
+	protected attack(cell: GridCell, force = false) {
+		if (cell.cellState === CellState.UNKNOWN && (this.ready || force)) {
 			this.ready = false;
 			const enemyPlayer = this.currentPlayer === this.state.player1 ? this.state.player2 : this.state.player1;
 			const targetCellState = enemyPlayer.playerGrid[cell.coords.row][cell.coords.column];
 
 			if (targetCellState !== CellState.WATER) {
-				let row = cell.coords.row;
-				let col = cell.coords.column;
+				const row = cell.coords.row;
+				const col = cell.coords.column;
 
 				this.currentPlayer.enemyGrid[row][col] = CellState.HIT;
 				cell.cellState = CellState.HIT;
@@ -56,7 +97,7 @@ export class Game extends Scene {
 					for (let i = Math.max(0, from); i < Math.min(to, this.currentPlayer.enemyGrid[row].length); i++) {
 						this.currentPlayer.enemyGrid[row][i] = CellState.WATER;
 					}
-				}
+				};
 
 				const fillCol = (from: number, to: number, col: number) => {
 					if (col < 0 || col >= this.currentPlayer.enemyGrid.length) {
@@ -66,7 +107,7 @@ export class Game extends Scene {
 					for (let i = Math.max(0, from); i < Math.min(to, this.currentPlayer.enemyGrid.length); i++) {
 						this.currentPlayer.enemyGrid[i][col] = CellState.WATER;
 					}
-				}
+				};
 
 				// Check for ship sink
 				if (targetCellState === CellState.SHIP_HORIZONTAL) {

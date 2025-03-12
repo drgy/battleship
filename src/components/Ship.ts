@@ -23,7 +23,8 @@ export class Ship extends Phaser.GameObjects.Container {
 		return this._shipLength;
 	}
 
-	public set absolutePosition(position: { x: number, y: number }) {
+	// eslint-disable-next-line
+	public set absolutePosition(position: { x: number; y: number }) {
 		this.setPosition(position.x - this.parentContainer.x, position.y - this.parentContainer.y + (this._unitSize * (this._isVertical ? 0 : 1)));
 	}
 

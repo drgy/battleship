@@ -40,7 +40,9 @@ export class Grid extends Phaser.GameObjects.Container {
 	}
 
 	public getRandomCell(): GridCell {
+		// eslint-disable-next-line
 		const row = Phaser.Math.Between(0, this._cells.length - 1);
+		// eslint-disable-next-line
 		const column = Phaser.Math.Between(0, this._cells[row].length - 1);
 		return this._cells[row][column];
 	}
@@ -178,6 +180,7 @@ export class Grid extends Phaser.GameObjects.Container {
 		}
 	}
 
+	// eslint-disable-next-line
 	public set cellsState(state: CellState[][]) {
 		for (let row = 0; row < this._cells.length; row++) {
 			for (let col = 0; col < this._cells[row].length; col++) {

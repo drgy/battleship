@@ -2,6 +2,8 @@ import { Grid } from "./Grid";
 import { CellState, GridCell } from "./GridCell";
 import { Ship } from "./Ship";
 
+type DragTarget = { target: { data: { list: { cell: GridCell } } } };
+
 export class ShipSelection extends Phaser.GameObjects.Container {
 	protected _ships: Ship[];
 	protected _grid: Grid;
@@ -26,6 +28,7 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 				const cell = this._grid.getRandomCell();
 
 				if (cell) {
+					// eslint-disable-next-line
 					ship.isVertical = Phaser.Math.Between(0, 1) === 1;
 
 					if (this._grid.placeAttempt(ship, cell)) {
@@ -38,7 +41,7 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 					this._grid.clearHelpers();
 				}
 			}
-	}
+		}
 	}
 
 	public resetShip(ship: Ship) {
@@ -52,7 +55,7 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 		this._ships.forEach(ship => {
 			ship.isVertical = false;
 			this.resetShip(ship);
-	});
+		});
 	}
 
 	constructor(scene: Phaser.Scene, ships: Ship[], grid: Grid) {
@@ -77,21 +80,21 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 
 		let currentTarget: GridCell | null = null;
 
-		scene.input.on('dragstart', (pointer: any, ship: Ship) => {
+		scene.input.on('dragstart', (_p, ship: Ship) => {
 			this._grid.removeShip(ship);
 			ship.parentContainer.bringToTop(ship);
 			this._lastShip = ship;
 			ship.coords = { row: -1, column: -1 };
 		});
 
-		scene.input.on('drag', (pointer: any, ship: { x: any; y: any }, dragX: any, dragY: any) => {
+		scene.input.on('drag', (_p, ship: Ship, dragX: number, dragY: number) => {
 			if (!currentTarget) {
 				ship.x = dragX;
 				ship.y = dragY;
 			}
 		});
 
-		scene.input.on('dragenter', (pointer: any, ship: any, target: any) => {
+		scene.input.on('dragenter', (_p, ship: Ship, target: DragTarget) => {
 			currentTarget = target.data.list.cell;
 
 			this._grid.clearHelpers();
@@ -102,14 +105,14 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 			}
 		});
 
-		scene.input.on('dragleave', (pointer: any, ship: any, target: any) => {
+		scene.input.on('dragleave', (_p, ship: Ship, target: DragTarget) => {
 			if (currentTarget === target.data.list.cell) {
 				currentTarget = null;
 				this._grid.clearHelpers();
 			}
 		});
 
-		scene.input.on('drop', (pointer: any, ship: any, target: any) => {
+		scene.input.on('drop', (_p, ship: Ship, target: DragTarget) => {
 			if (currentTarget?.cellState === CellState.READY) {
 				this._grid.place(ship, target.data.list.cell);
 				ship.coords = target.data.list.cell.coords;
@@ -118,7 +121,7 @@ export class ShipSelection extends Phaser.GameObjects.Container {
 			}
 		});
 
-		scene.input.on('dragend', (pointer: any, ship: Ship, dropped: any) => {
+		scene.input.on('dragend', (_p, ship: Ship, dropped: boolean) => {
 			currentTarget = null;
 			this._grid.clearHelpers();
 
